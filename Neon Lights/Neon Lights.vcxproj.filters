@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="NeonLights.cpp" />
+    <ClCompile Include="..\include\json_reader.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\json_value.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\json_writer.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleDummies.cpp" />
+    <ClCompile Include="KeyPress.cpp" />
+    <ClCompile Include="LightGroup.cpp" />
+    <ClCompile Include="Pattern.cpp" />
+    <ClCompile Include="VehicleInfo.cpp" />
+    <ClCompile Include="VehicleInfoManager.cpp" />
+    <ClCompile Include="Log.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="json">
+      <UniqueIdentifier>{d25dd146-c6ca-4525-a57a-783ae1fe1af5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\include\json_valueiterator.inl">
+      <Filter>json</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="VehicleDummies.h" />
+    <ClInclude Include="Dummy.h" />
+    <ClInclude Include="KeyPress.h" />
+    <ClInclude Include="LightGroup.h" />
+    <ClInclude Include="NeonLights.h" />
+    <ClInclude Include="Pattern.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="VehicleInfo.h" />
+    <ClInclude Include="VehicleInfoManager.h" />
+    <ClInclude Include="Log.h" />
+  </ItemGroup>
+</Project>
