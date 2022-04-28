@@ -150,7 +150,6 @@ void NeonLights::LoadConfig() {
 		lightGroup->offsetBy = group["offsetBy"].asInt();
 		lightGroup->size = group["size"].asFloat();
 		lightGroup->lerpColor = group["lerpColor"].asBool();
-		lightGroup->size = group["size"].asFloat();
 		lightGroup->farClip = ValidateValue(group["farClip"], lightGroup->farClip).asFloat();
 		lightGroup->nearClip = ValidateValue(group["nearClip"], lightGroup->nearClip).asFloat();
 
