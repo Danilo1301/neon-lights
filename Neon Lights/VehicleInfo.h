@@ -23,6 +23,5 @@ public:
 	void RegisterCoronas();
 	void Destroy();
 
-	void RegisterCorona(int lightid, CVector position, CRGBA color, float radius);
 	void AddLightGroup(LightGroup* lightGroup);
 };

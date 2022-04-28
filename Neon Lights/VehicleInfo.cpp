@@ -238,8 +238,29 @@ void VehicleInfo::RegisterCoronas() {
 				);
 			}
 			
-
-			RegisterCorona(lightId++, lightGroupData->lightStoredPositions[i], color, lightGroup->size);
+			CCoronas::RegisterCorona(
+				lightId++,
+				m_Vehicle,
+				color.r,
+				color.g,
+				color.b,
+				color.a,
+				lightGroupData->lightStoredPositions[i],
+				lightGroup->size,
+				lightGroup->farClip,
+				eCoronaType::CORONATYPE_SHINYSTAR,
+				eCoronaFlareType::FLARETYPE_NONE,
+				false,
+				false,
+				0,
+				0.0f,
+				false,
+				lightGroup->nearClip, //0.1
+				0,
+				15.0f,
+				false,
+				false
+			);
 		}
 	}
 
@@ -258,32 +279,6 @@ void VehicleInfo::Destroy() {
 	}
 	m_LightGroupData.clear();
 };
-
-void VehicleInfo::RegisterCorona(int lightid, CVector position, CRGBA color, float radius) {
-	CCoronas::RegisterCorona(
-		lightid,
-		m_Vehicle,
-		color.r,
-		color.g,
-		color.b,
-		color.a,
-		position,
-		radius,
-		100.0f,
-		eCoronaType::CORONATYPE_SHINYSTAR,
-		eCoronaFlareType::FLARETYPE_NONE,
-		false,
-		false,
-		0,
-		0.0f,
-		false,
-		0.1f,
-		0,
-		15.0f,
-		false,
-		false
-	);
-}
 
 void VehicleInfo::AddLightGroup(LightGroup* lightGroup) {
 	LightGroupData* lightGroupData = new LightGroupData();

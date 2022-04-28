@@ -3,7 +3,6 @@
 #include "LightGroup.h"
 #include "Pattern.h"
 #include "KeyPress.h"
-#include "json/json.h"
 
 bool firstLoad = true;
 
@@ -151,6 +150,9 @@ void NeonLights::LoadConfig() {
 		lightGroup->offsetBy = group["offsetBy"].asInt();
 		lightGroup->size = group["size"].asFloat();
 		lightGroup->lerpColor = group["lerpColor"].asBool();
+		lightGroup->size = group["size"].asFloat();
+		lightGroup->farClip = ValidateValue(group["farClip"], lightGroup->farClip).asFloat();
+		lightGroup->nearClip = ValidateValue(group["nearClip"], lightGroup->nearClip).asFloat();
 
 		for (size_t i = 0; i < group["dummies"].size(); i++)
 		{
@@ -184,6 +186,13 @@ void NeonLights::ShowErrorMessage(std::string title, std::string content) {
 		sprintf(buffer, "%s~n~Check NeonLights.log for more info", title.c_str());
 		CMessages::AddMessageJumpQ(buffer, 3000, 0, true);
 	}
+}
+
+template<class T>
+inline Json::Value NeonLights::ValidateValue(Json::Value value, T defaultValue)
+{
+	if (value.empty()) return defaultValue;
+	return value;
 }
 
 NeonLights mod;

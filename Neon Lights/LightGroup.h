@@ -15,6 +15,8 @@ public:
 	float size = 0.2f;
 	int offsetBy = 0;
 	bool lerpColor = true;
+	float farClip = 600.0f;
+	float nearClip = 0.05f;
 
 	Dummy* AddDummy(CVector position) {
 		Dummy* dummy = new Dummy();
