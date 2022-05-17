@@ -1,8 +1,8 @@
-#include "VehicleInfo.h"
+#include "Vehicle.h"
+
 #include "Pattern.h"
-#include "VehicleDummies.h"
-#include "Log.h"
-#include "NeonLights.h"
+#include "VehicleDummy.h"
+#include "Mod.h"
 
 float TotalDistanceBetweenPoints(std::vector<CVector> points) {
 	float totalDistance = 0.0f;
@@ -78,45 +78,14 @@ CVector PointInLines(std::vector<CVector> points, float position) {
 	return CVectorLerp(points[point + 1], points[point], toLerp);
 }
 
-VehicleInfo::VehicleInfo(CVehicle* vehicle, int modelId) {
+Vehicle::Vehicle(CVehicle* vehicle) {
 	m_Vehicle = vehicle;
 
-	std::vector<LightGroup*> lightGroups;
-	std::vector<Dummy*> dummies;
-
-	for (auto p : LightGroups::m_LightGroups) {
-		if (p.first != modelId) continue;
-
-		for (LightGroup* lightGroup : p.second) {
-			lightGroups.push_back(lightGroup);
-
-			for (Dummy* dummy : lightGroup->dummies) {
-				if (dummy->name.empty()) continue;
-				dummies.push_back(dummy);
-			}
-		}
-	}
-
-	if (dummies.size() > 0) {
-		auto frames = VehicleDummies::GetFramesOnVehicle(vehicle);
-
-		for (auto frame : frames) {
-
-			for (Dummy* dummy : dummies) {
-				std::string frameName = GetFrameNodeName(frame);
-
-				if (frameName.compare(dummy->name) == 0)
-					dummy->position = VehicleDummies::GetDummyPosition(frame);
-			}
-		}
-	}
-
-	for (LightGroup* lightGroup : lightGroups) {
-		AddLightGroup(lightGroup);
-	}
+	CheckForLightGroups();
 }
 
-void VehicleInfo::Update() {
+void Vehicle::Update() {
+
 	for (LightGroupData* lightGroupData : m_LightGroupData) {
 		auto lightGroup = lightGroupData->lightGroup;
 
@@ -127,87 +96,53 @@ void VehicleInfo::Update() {
 	}
 }
 
-void VehicleInfo::Draw() {
-	
-	static char buffer[512] = "";
+void Vehicle::Draw() {
+}
 
-	if (!NeonLights::m_EnableDebug) return;
+void Vehicle::DrawDebug() {
+	static char buffer[512] = "";
 
 	for (LightGroupData* lightGroupData : m_LightGroupData) {
 		auto lightGroup = lightGroupData->lightGroup;
 
 		sprintf(buffer, "%s~n~%d", lightGroup->name.c_str(), lightGroupData->patternProgress);
-		DrawWorldText(buffer, m_Vehicle->TransformFromObjectSpace(lightGroup->dummies[0]->position + CVector(0, 0, 0.5f)));
+		DrawWorldText(buffer, lightGroup->dummies[0]->GetTransformedPosition(m_Vehicle) + CVector(0, 0, 0.5f));
 
 		for (auto dummy : lightGroup->dummies)
 		{
 			sprintf(buffer, "dummy~n~%s~n~%s", dummy->name.c_str(), lightGroup->name.c_str());
-			DrawWorldText(buffer, m_Vehicle->TransformFromObjectSpace(dummy->position));
+			DrawWorldText(buffer, dummy->GetTransformedPosition(m_Vehicle));
 		}
 	}
-
-	/*
-	for (LightGroupData* lightGroupData : m_LightGroupData) {
-		auto lightGroup = lightGroupData->lightGroup;
-
-		sprintf(buffer, "%s~n~%d", lightGroup->name.c_str(), lightGroupData->patternProgress);
-		DrawWorldText(buffer, m_Vehicle->TransformFromObjectSpace(lightGroup->dummies[0]->position + CVector(0, 0, 1.0f)));
-
-		
-		if ((int)lightGroupData->lightStoredPositions.size() > 0) {
-
-			for (int i = 0; i < lightGroup->amount; i++) {
-				auto position = m_Vehicle->TransformFromObjectSpace(lightGroupData->lightStoredPositions[i]);
-
-				int t;
-				int stepIndex;
-				int offset = (i * lightGroup->offsetBy);
-
-				GetPatternStepAndTime(
-					lightGroup->pattern,
-					lightGroupData->patternProgress + offset,
-					t,
-					stepIndex
-				);
-
-				PatternStep* step = lightGroup->pattern->steps[stepIndex];
-
-				//sprintf(buffer, "%d~n~%s~n~%d~n~%d", i, lightGroup->name.c_str(), t, step->time);
-				//MessageBox(HWND_DESKTOP, buffer, "", MB_ICONERROR);
-				//DrawWorldText(buffer, position);
-				//float currentProgress = GetPatternProgress(lightGroup->pattern, lightGroupData->patternProgress + (i * 0.2f));
-			}
-		}
-	}
-	*/
 }
 
-void VehicleInfo::RegisterCoronas() {
-
-	if (!m_Enabled) return;
-
-	for (LightGroupData* lightGroupData : m_LightGroupData) {
-
-		if (lightGroupData->lightStoredPositions.size() == 0) {
-			auto lightGroup = lightGroupData->lightGroup;
-
-			std::vector<CVector> points;
-			for (Dummy* dummy : lightGroup->dummies) points.push_back(dummy->position);
-			float totalDistance = TotalDistanceBetweenPoints(points);
-
-			for (int i = 0; i < lightGroup->amount; i++) {
-				float linePosition = totalDistance / (lightGroup->amount - 1) * i;
-
-				CVector position = PointInLines(points, linePosition);
-				lightGroupData->lightStoredPositions.push_back(position);
-			}
-		}
-	}
+void Vehicle::RegisterCoronas() {
+	if (!m_Enabled) return;;
 
 	int lightId = reinterpret_cast<unsigned int>(m_Vehicle) + 20;
 
 	for (LightGroupData* lightGroupData : m_LightGroupData) {
-		LightGroup* lightGroup = lightGroupData->lightGroup;
+
+		auto lightGroup = lightGroupData->lightGroup;
+
+		std::vector<CVector> points;
+		for (Dummy* dummy : lightGroup->dummies) {
+			points.push_back(dummy->GetTransformedPosition(m_Vehicle));
+		}
+
+		//
+
+		lightGroupData->lightStoredPositions.clear();
+
+		float totalDistance = TotalDistanceBetweenPoints(points);
+		for (int i = 0; i < lightGroup->amount; i++) {
+			float linePosition = totalDistance / (lightGroup->amount - 1) * i;
+			CVector position = PointInLines(points, linePosition);
+			lightGroupData->lightStoredPositions.push_back(position);
+		}
+
+		//
+
 		Pattern* pattern = lightGroup->pattern;
 
 		for (int i = 0; i < (int)lightGroupData->lightStoredPositions.size(); i++)
@@ -240,7 +175,7 @@ void VehicleInfo::RegisterCoronas() {
 			
 			CCoronas::RegisterCorona(
 				lightId++,
-				m_Vehicle,
+				NULL,
 				color.r,
 				color.g,
 				color.b,
@@ -255,32 +190,36 @@ void VehicleInfo::RegisterCoronas() {
 				0,
 				0.0f,
 				false,
-				lightGroup->nearClip, //0.1
+				lightGroup->nearClip,
 				0,
-				15.0f,
+				30.0f,
 				false,
 				false
 			);
 		}
 	}
-
-	/*
-	for (LightGroupData* lightGroupData : m_LightGroupData) {
-		for (Dummy* dummy : lightGroupData->lightGroup->dummies) {
-			RegisterCorona(lightId++, dummy->position, CRGBA(255, 0, 0), 0.1f);
-		}
-	}
-	*/
 }
 
-void VehicleInfo::Destroy() {
+void Vehicle::CheckForLightGroups() {
+	auto modelId = m_Vehicle->m_nModelIndex;
+
+	for (auto p : LightGroups::m_LightGroups) {
+		if (p.first != modelId) continue;
+
+		for (LightGroup* lightGroup : p.second) {
+			AddLightGroup(lightGroup);
+		}
+	}
+}
+
+void Vehicle::Destroy() {
 	for (LightGroupData* lightGroupData : m_LightGroupData) {
 		delete lightGroupData;
 	}
 	m_LightGroupData.clear();
 };
 
-void VehicleInfo::AddLightGroup(LightGroup* lightGroup) {
+void Vehicle::AddLightGroup(LightGroup* lightGroup) {
 	LightGroupData* lightGroupData = new LightGroupData();
 	lightGroupData->lightGroup = lightGroup;
 	m_LightGroupData.push_back(lightGroupData);

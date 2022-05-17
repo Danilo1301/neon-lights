@@ -18,10 +18,10 @@ public:
 	float farClip = 600.0f;
 	float nearClip = 0.05f;
 
-	Dummy* AddDummy(CVector position) {
+	Dummy* AddDummy(CVector offset) {
 		Dummy* dummy = new Dummy();
 		dummy->name = "";
-		dummy->position = position;
+		dummy->offset = offset;
 		AddDummy(dummy);
 		return dummy;
 	}
@@ -29,6 +29,7 @@ public:
 	void AddDummy(Dummy* dummy) {
 		dummies.push_back(dummy);
 	}
+
 };
 
 class LightGroups {

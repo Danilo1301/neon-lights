@@ -1,15 +1,17 @@
-#include "NeonLights.h"
-#include "VehicleInfoManager.h"
+#include "Mod.h"
+#include "Vehicles.h"
 #include "LightGroup.h"
 #include "Pattern.h"
-#include "KeyPress.h"
 
 bool firstLoad = true;
 
-bool NeonLights::m_EnableDebug = false;
+bool Mod::m_EnableDebug = false;
 
-NeonLights::NeonLights() {
-	Log::Open();
+std::string Mod::m_Version = "1.0.0";
+std::string Mod::m_Name = "Neon Lights";
+
+Mod::Mod() {
+	Log::Open("Neon Lights.log");
 
 	Log::file << "Initialized" << std::endl;
 
@@ -41,64 +43,85 @@ NeonLights::NeonLights() {
 
 
 	Events::vehicleSetModelEvent += [](CVehicle* vehicle, int modelIndex) {
-		VehicleInfoManager::TryAddVehicleInfo(vehicle, modelIndex);
+		//Vehicles::TryAddVehicleInfo(vehicle, modelIndex);
 	};
 
 	Events::vehicleDtorEvent.after += [](CVehicle* vehicle) {
-		if (VehicleInfoManager::HasVehicleInfo(vehicle)) {
-			VehicleInfoManager::RemoveVehicleInfo(vehicle);
+		if (Vehicles::HasVehicle(vehicle)) {
+			Vehicles::RemoveVehicle(vehicle);
 		}
 	};
 
-
-	Events::drawingEvent += []() {
-		VehicleInfoManager::Draw();
-	};
-
-	Events::processScriptsEvent += []() {
-		VehicleInfoManager::Update();
-
-		KeyPress::Update();
-
-		if (KeyPress::GetKey(17)) {
-			if (KeyPress::GetKeyDown(78)) {
-				auto veh = FindPlayerVehicle(0, false);
-
-				if (veh > 0) {
-					if (VehicleInfoManager::HasVehicleInfo(veh)) {
-						auto vehicleInfo = VehicleInfoManager::GetVehicleInfo(veh);
-						vehicleInfo->m_Enabled = !vehicleInfo->m_Enabled;
-					}
-				}
-			}
-		}
-
-		if (KeyPress::GetKey(17)) {
-			if (KeyPress::GetKeyDown(82)) {
-				CMessages::AddMessageJumpQ("Config reloaded", 1000, 0, false);
-
-				VehicleInfoManager::RemoveAllVehicleInfos();
-				LightGroups::RemoveAllLightGroups();
-				Patterns::RemovePatterns();
-
-				LoadConfig();
-
-				for (auto vehicle : CPools::ms_pVehiclePool) {
-					VehicleInfoManager::TryAddVehicleInfo(vehicle, vehicle->m_nModelIndex);
-				}
-			}
-		}
-
-		if (KeyPress::GetKey(17) && KeyPress::GetKey(16)) {
-			if (KeyPress::GetKeyDown(82)) {
-				NeonLights::m_EnableDebug = !NeonLights::m_EnableDebug;
-				CMessages::AddMessageJumpQ(NeonLights::m_EnableDebug ? "Debug enabled" : "Debug disabled", 1000, 0, false);
-			}
+	Events::drawingEvent +=	Draw;
+	Events::processScriptsEvent += Update;
+	Events::vehicleRenderEvent += [](CVehicle* veh) {
+		if (Vehicles::HasVehicle(veh)) {
+			Vehicles::m_VehicleMap[veh]->RegisterCoronas();
 		}
 	};
 }
 
-void NeonLights::LoadConfig() {
+void Mod::Update() {
+	Input::Update();
+
+	Menu::Update();
+
+	if (Input::GetKey(17)) {
+		if (Input::GetKeyDown(78)) {
+			auto veh = FindPlayerVehicle(0, false);
+
+			if (veh > 0) {
+				if (Vehicles::HasVehicle(veh)) {
+					auto vehicle = Vehicles::GetVehicle(veh);
+					vehicle->m_Enabled = !vehicle->m_Enabled;
+				}
+			}
+		}
+	}
+
+	if (Input::GetKey(17)) {
+		if (Input::GetKeyDown(82)) {
+			CMessages::AddMessageJumpQ("Config reloaded", 1000, 0, false);
+
+			Vehicles::RemoveAllVehicles();
+			LightGroups::RemoveAllLightGroups();
+			Patterns::RemovePatterns();
+
+			LoadConfig();
+
+			Vehicles::TryAddAllVehicles();
+		}
+	}
+
+	if (Input::GetKey(17) && Input::GetKey(16)) {
+		if (Input::GetKeyDown(82)) {
+			Mod::m_EnableDebug = !Mod::m_EnableDebug;
+			CMessages::AddMessageJumpQ(Mod::m_EnableDebug ? "Debug enabled" : "Debug disabled", 1000, 0, false);
+		}
+	}
+
+	Vehicles::TryAddAllVehicles();
+
+	for (auto p : Vehicles::m_VehicleMap) {
+		Vehicle* vehicle = p.second;
+		vehicle->Update();
+	}
+}
+
+void Mod::Draw() {
+
+	for (auto p : Vehicles::m_VehicleMap) {
+		Vehicle* vehicle = p.second;
+
+		vehicle->Draw();
+
+		if (Mod::m_EnableDebug) {
+			vehicle->DrawDebug();
+		}
+	}
+}
+
+void Mod::LoadConfig() {
 	std::string path = PLUGIN_PATH("\\NeonLights.config.json");
 	std::ifstream file(path);
 
@@ -168,7 +191,7 @@ void NeonLights::LoadConfig() {
 	Log::file << "------------------------------------" << std::endl;
 }
 
-void NeonLights::ShowErrorMessage(std::string title, std::string content) {
+void Mod::ShowErrorMessage(std::string title, std::string content) {
 	static char buffer[256];
 	snprintf(buffer, 256, "%s", content.c_str());
 
@@ -188,10 +211,10 @@ void NeonLights::ShowErrorMessage(std::string title, std::string content) {
 }
 
 template<class T>
-inline Json::Value NeonLights::ValidateValue(Json::Value value, T defaultValue)
+inline Json::Value Mod::ValidateValue(Json::Value value, T defaultValue)
 {
 	if (value.empty()) return defaultValue;
 	return value;
 }
 
-NeonLights mod;
+Mod mod;

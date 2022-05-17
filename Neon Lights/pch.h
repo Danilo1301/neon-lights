@@ -22,11 +22,13 @@
 #include "CMessages.h"
 #include "CCoronas.h"
 
-#include "Log.h"
-
 #include "extensions/ScriptCommands.h"
 
 #include "json/json.h"
+
+#include "log/Log.h"
+#include "input/Input.h"
+#include "menu/Menu.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -96,4 +98,8 @@ static CRGBA CRGBALerp(CRGBA color1, CRGBA color2, float t) {
 	color.b = (unsigned char)(color1.b + ((color2.b - color1.b) * t));
 	color.a = 255;
 	return color;
+}
+
+static std::string FormatCVector(CVector vec) {
+	return std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z);
 }

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="NeonLights.cpp" />
+    <ClCompile Include="Mod.cpp" />
     <ClCompile Include="..\include\json_reader.cpp">
       <Filter>json</Filter>
     </ClCompile>
@@ -11,17 +11,61 @@
     <ClCompile Include="..\include\json_writer.cpp">
       <Filter>json</Filter>
     </ClCompile>
-    <ClCompile Include="VehicleDummies.cpp" />
-    <ClCompile Include="KeyPress.cpp" />
+    <ClCompile Include="VehicleDummy.cpp" />
     <ClCompile Include="LightGroup.cpp" />
     <ClCompile Include="Pattern.cpp" />
-    <ClCompile Include="VehicleInfo.cpp" />
-    <ClCompile Include="VehicleInfoManager.cpp" />
-    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
+    <ClCompile Include="Vehicles.cpp" />
+    <ClCompile Include="log\Log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="input\Input.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\Menu.cpp">
+      <Filter>menu</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\PositionEditor.cpp">
+      <Filter>menu</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\TextEditor.cpp">
+      <Filter>menu</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\Window.cpp">
+      <Filter>menu</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\item\ButtonKey.cpp">
+      <Filter>menu\item</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\item\CheckBox.cpp">
+      <Filter>menu\item</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\item\Item.cpp">
+      <Filter>menu\item</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\item\NumberRange.cpp">
+      <Filter>menu\item</Filter>
+    </ClCompile>
+    <ClCompile Include="menu\item\Options.cpp">
+      <Filter>menu\item</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="json">
       <UniqueIdentifier>{d25dd146-c6ca-4525-a57a-783ae1fe1af5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{862bf5b6-cd23-42e6-9d71-92eb0a7374b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="menu">
+      <UniqueIdentifier>{7d59a9ef-1fbd-4ee7-8b38-ef8b272d1c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{dbacc955-5c59-4d28-aa03-42454daba4f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="menu\item">
+      <UniqueIdentifier>{2e21e90c-889e-40aa-8d69-d4b0bd24ca9e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,15 +74,47 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VehicleDummies.h" />
+    <ClInclude Include="VehicleDummy.h" />
     <ClInclude Include="Dummy.h" />
-    <ClInclude Include="KeyPress.h" />
     <ClInclude Include="LightGroup.h" />
-    <ClInclude Include="NeonLights.h" />
+    <ClInclude Include="Mod.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="VehicleInfo.h" />
-    <ClInclude Include="VehicleInfoManager.h" />
-    <ClInclude Include="Log.h" />
+    <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="Vehicles.h" />
+    <ClInclude Include="log\Log.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="input\Input.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\Menu.h">
+      <Filter>menu</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\PositionEditor.h">
+      <Filter>menu</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\TextEditor.h">
+      <Filter>menu</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\Window.h">
+      <Filter>menu</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\item\ButtonKey.h">
+      <Filter>menu\item</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\item\CheckBox.h">
+      <Filter>menu\item</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\item\Item.h">
+      <Filter>menu\item</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\item\NumberRange.h">
+      <Filter>menu\item</Filter>
+    </ClInclude>
+    <ClInclude Include="menu\item\Options.h">
+      <Filter>menu\item</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h" />
   </ItemGroup>
 </Project>

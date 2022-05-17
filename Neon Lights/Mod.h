@@ -1,10 +1,15 @@
 #include "pch.h"
 
-class NeonLights {
+class Mod {
 public:
-    NeonLights();
-
     static bool m_EnableDebug;
+    static std::string m_Version;
+    static std::string m_Name;
+
+    Mod();
+
+    static void Update();
+    static void Draw();
 
     static void LoadConfig();
     static void ShowErrorMessage(std::string title, std::string content);

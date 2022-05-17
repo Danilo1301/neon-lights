@@ -9,19 +9,22 @@ struct LightGroupData {
 	int patternProgress;
 };
 
-class VehicleInfo {
+class Vehicle {
 public:
 	CVehicle* m_Vehicle;
 
 	std::vector<LightGroupData*> m_LightGroupData;
 	bool m_Enabled = true;
 
-	VehicleInfo(CVehicle* vehicle, int modelId);
+	Vehicle(CVehicle* vehicle);
 
 	void Update();
 	void Draw();
+	void DrawDebug();
 	void RegisterCoronas();
 	void Destroy();
+
+	void CheckForLightGroups();
 
 	void AddLightGroup(LightGroup* lightGroup);
 };
