@@ -72,9 +72,9 @@ CVector VehicleDummy::FindTransformedDummyPosition(CVehicle* vehicle, std::strin
 
 	for (auto frame : frames)
 	{
-		std::string frameName = GetFrameNodeName(frame);
+		std::string frameName = StringToUpper(GetFrameNodeName(frame));
 
-		if (frameName.compare(dummyName) == 0) {
+		if (frameName.compare(StringToUpper(dummyName)) == 0) {
 			return VehicleDummy::GetTransformedDummyPosition(vehicle, frame, offset);
 		}
 	}

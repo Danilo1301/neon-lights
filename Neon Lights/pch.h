@@ -103,3 +103,10 @@ static CRGBA CRGBALerp(CRGBA color1, CRGBA color2, float t) {
 static std::string FormatCVector(CVector vec) {
 	return std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z);
 }
+
+static std::string StringToUpper(std::string data) {
+	std::for_each(data.begin(), data.end(), [](char& c) {
+		c = ::toupper(c);
+	});
+	return data;
+}
