@@ -192,7 +192,7 @@ void Vehicle::RegisterCoronas() {
 				false,
 				lightGroup->nearClip,
 				0,
-				30.0f,
+				200.0f,
 				false,
 				false
 			);

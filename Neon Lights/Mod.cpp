@@ -7,13 +7,13 @@ bool firstLoad = true;
 
 bool Mod::m_EnableDebug = false;
 
-std::string Mod::m_Version = "1.0.0";
+std::string Mod::m_Version = "1.1";
 std::string Mod::m_Name = "Neon Lights";
 
 Mod::Mod() {
-	Log::Open("Neon Lights.log");
+	Log::Open("NeonLights.log");
 
-	Log::file << "Initialized" << std::endl;
+	Log::file << "Initialized v" << m_Version << std::endl;
 
 	LoadConfig();
 
