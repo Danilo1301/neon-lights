@@ -4,12 +4,20 @@
 #include "Dummy.h"
 #include "Pattern.h"
 
+struct LightGroupCloneSettings
+{
+	Dummy* toDummy;
+	bool flipX;
+	bool flipY;
+};
+
 class LightGroup {
 public:
 	std::string name;
 	int modelId;
 	Pattern* pattern;
 	std::vector<Dummy*> dummies;
+	std::vector<LightGroupCloneSettings*> clones;
 
 	int amount = 1;
 	float size = 0.2f;
@@ -29,7 +37,6 @@ public:
 	void AddDummy(Dummy* dummy) {
 		dummies.push_back(dummy);
 	}
-
 };
 
 class LightGroups {

@@ -7,7 +7,7 @@ bool firstLoad = true;
 
 bool Mod::m_EnableDebug = false;
 
-std::string Mod::m_Version = "1.1";
+std::string Mod::m_Version = "1.2";
 std::string Mod::m_Name = "Neon Lights";
 
 Mod::Mod() {
@@ -180,6 +180,32 @@ void Mod::LoadConfig() {
 		{
 			Dummy* dummy = Dummy::FromJSON(group["dummies"][i]);
 			lightGroup->AddDummy(dummy);
+		}
+
+		if (!group["clone_to"].isNull())
+		{
+			for (size_t i = 0; i < group["clone_to"].size(); i++)
+			{
+				/*
+				Json::Value cloneValue = group["clone_to"][i];
+
+				auto clone = new LightGroupCloneSettings({
+					Dummy::FromJSON(cloneValue["dummy"]),
+					ValidateValue(cloneValue["flipX"], false).asBool(),
+					ValidateValue(cloneValue["flipY"], false).asBool(),
+				});
+				*/
+
+				auto dummy = Dummy::FromJSON(group["clone_to"][i]);
+
+				auto clone = new LightGroupCloneSettings({
+					dummy,
+					false,
+					false
+				});
+
+				lightGroup->clones.push_back(clone);
+			}
 		}
 
 		Log::file << "Loaded group '" << groupName << "' with " << group["dummies"].size() << " dummies for ID " << vehicle << std::endl;
