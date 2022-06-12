@@ -7,7 +7,7 @@
 
 ### Para adicionar dummy no veículo (opcional)
 * ZModeler
-* Blender 2.81 (com addon do DragonFF)
+* Blender (com addon do [DragonFF](https://gtaforums.com/topic/925364-dragonff-blender-gta-io))
 
 <br>
 
