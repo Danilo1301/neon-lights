@@ -6,6 +6,7 @@
 
 struct CoronaGroup
 {
+	int offsetId = 0;
 	CVector startPosition = CVector(0, 0, 0);
 	std::vector<CVector> offsets;
 };
@@ -146,6 +147,8 @@ void Vehicle::RegisterCoronas() {
 
 		//Log::file << "[LIGHT GROUP DATA]" << std::endl;
 
+		int offsetId = 0;
+
 		for (int i = 0; i < (int)lightGroup->dummies.size(); i++)
 		{
 			Dummy* dummy = lightGroup->dummies[i];
@@ -160,14 +163,18 @@ void Vehicle::RegisterCoronas() {
 			{
 				coronaGroup = new CoronaGroup();
 				coronaGroup->startPosition = mainStartPosition;
-				coronaGroups.push_back(coronaGroup);
+				coronaGroup->offsetId = offsetId;
 
+				coronaGroups.push_back(coronaGroup);
 				mainCoronaGroups.push_back(coronaGroup);
+
+				offsetId++;
 			}
 
 			CVector position = dummy->GetTransformedPosition(m_Vehicle);
 			CVector offset = coronaGroup->startPosition - position;
 			coronaGroup->offsets.push_back(offset);
+			
 
 			//Log::file << "[dummy offset] " << FormatCVector(offset) << std::endl;
 		}
@@ -180,7 +187,6 @@ void Vehicle::RegisterCoronas() {
 		
 		for (auto clone : lightGroup->clones)
 		{
-
 			for (auto cg : mainCoronaGroups)
 			{
 				CoronaGroup* coronaGroup = new CoronaGroup();
@@ -202,8 +208,10 @@ void Vehicle::RegisterCoronas() {
 		//
 
 
+		int cn = -1;
 		for (auto coronaGroup : coronaGroups)
 		{
+			cn++;
 
 			float totalDistance = TotalDistanceBetweenPoints(coronaGroup->offsets);
 			for (int i = 0; i < lightGroup->amount; i++)
@@ -214,9 +222,12 @@ void Vehicle::RegisterCoronas() {
 				CVector position = coronaGroup->startPosition - offsetPosition;
 
 				//
+
 				int t;
 				int stepIndex;
-				int offset = (i * lightGroup->offsetBy);
+				int offset = (i + (coronaGroup->offsetId * lightGroup->amount)) * lightGroup->offsetBy;
+
+				//Log::file << "coronaGroup " << cn << ", i " << i << ", offsetId " << coronaGroup->offsetId << ", offset " << offset << std::endl;
 
 				GetPatternStepAndTime(
 					lightGroup->pattern,
@@ -328,7 +339,7 @@ void Vehicle::RegisterCoronas() {
 		coronaGroups.clear();
 	}
 
-	Log::file << "--\n\n\n" << std::endl;
+	//Log::file << "--\n\n\n" << std::endl;
 }
 
 void Vehicle::CheckForLightGroups() {
