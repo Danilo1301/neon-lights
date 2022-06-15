@@ -5,11 +5,11 @@
 
 class Dummy {
 public:
-	std::string name;
-	CVector offset;
+	std::string name = "";
+	CVector offset = CVector(0, 0, 0);
 
 	CVector GetTransformedPosition(CVehicle* vehicle) {
-		if (name.empty()) return VehicleDummy::GetTransformedPosition(vehicle, offset);
+		if (name.length() == 0) return VehicleDummy::GetTransformedPosition(vehicle, offset);
 
 		return VehicleDummy::FindTransformedDummyPosition(vehicle, name, CVector(0, 0, 0));
 	}

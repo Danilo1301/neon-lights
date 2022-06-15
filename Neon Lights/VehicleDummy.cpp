@@ -43,8 +43,14 @@ CVector VehicleDummy::GetTransformedPosition(CVehicle* vehicle, CVector position
 	auto rootFrame = (RwFrame*)vehicle->m_pRwClump->object.parent;
 	auto c = rootFrame->child;
 
+	//Log::file << "child= " << GetFrameNodeName(c) << std::endl;
 	RwMatrixTransform(tempMat, RwFrameGetMatrix(rootFrame), rwCOMBINEREPLACE);
-	RwMatrixTransform(tempMat, RwFrameGetMatrix(c), rwCOMBINEPRECONCAT);
+
+	if (StringToUpper(GetFrameNodeName(c)).find(StringToUpper("chassis_dummy")) != -1)
+	{
+		RwMatrixTransform(tempMat, RwFrameGetMatrix(c), rwCOMBINEPRECONCAT);
+	}
+
 	RwMatrixTranslate(tempMat, &position.ToRwV3d(), rwCOMBINEPRECONCAT);
 
 	return CVector(tempMat->pos.x, tempMat->pos.y, tempMat->pos.z);
