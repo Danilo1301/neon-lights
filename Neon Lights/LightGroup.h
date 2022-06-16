@@ -1,49 +1,22 @@
 #pragma once
 
 #include "pch.h"
-#include "Dummy.h"
-#include "Pattern.h"
-
-struct LightGroupCloneSettings
-{
-	Dummy* toDummy;
-	bool flipX;
-	bool flipY;
-};
+#include "Point.h"
 
 class LightGroup {
 public:
-	std::string name;
 	int modelId;
-	Pattern* pattern;
-	std::vector<Dummy*> dummies;
-	std::vector<LightGroupCloneSettings*> clones;
+	std::string name = "Light Group";
 
-	int amount = 1;
-	float size = 0.2f;
-	int offsetBy = 0;
-	bool lerpColor = true;
-	float farClip = 600.0f;
-	float nearClip = 0.05f;
+	CVector position = CVector(0, 0, 0);
 
-	Dummy* AddDummy(CVector offset) {
-		Dummy* dummy = new Dummy();
-		dummy->name = "";
-		dummy->offset = offset;
-		AddDummy(dummy);
-		return dummy;
-	}
+	int amountLights = 30;
 
-	void AddDummy(Dummy* dummy) {
-		dummies.push_back(dummy);
-	}
-};
+	std::vector<Point*> points;
 
-class LightGroups {
-public:
-	static std::map<int, std::vector<LightGroup*>> m_LightGroups;
+	LightGroup(int modelId);
 
-	static LightGroup* CreateLightGroup(std::string name, int modelId, Pattern* pattern);
-	static void RemoveAllLightGroups();
-	static bool HasLightGroupForModel(int modelId);
+	Point* AddPoint(CVector offset);
+
+	CVector GetPointPosition(Point* point, CVehicle* vehicle);
 };

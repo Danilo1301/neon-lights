@@ -26,9 +26,12 @@
 
 #include "json/json.h"
 
+#include "TestHelper.h"
+
 #include "log/Log.h"
 #include "input/Input.h"
 #include "menu/Menu.h"
+
 
 #define M_PI 3.14159265358979323846
 

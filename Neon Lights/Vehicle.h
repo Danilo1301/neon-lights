@@ -3,28 +3,34 @@
 #include "pch.h"
 #include "LightGroup.h"
 
-struct LightGroupData {
+struct LightGroupData
+{
 	LightGroup* lightGroup;
-	std::vector<CVector> lightStoredPositions;
-	int patternProgress;
+
+	LightGroupData(LightGroup* lightGroup)
+	{
+		this->lightGroup = lightGroup;
+	}
 };
 
 class Vehicle {
+private:
+	std::map<LightGroup*, LightGroupData*> m_LightGroupData;
 public:
 	CVehicle* m_Vehicle;
 
-	std::vector<LightGroupData*> m_LightGroupData;
-	bool m_Enabled = true;
+	bool m_DrawPoints = true;
 
 	Vehicle(CVehicle* vehicle);
 
 	void Update();
-	void Draw();
-	void DrawDebug();
-	void RegisterCoronas();
-	void Destroy();
-
 	void CheckForLightGroups();
 
-	void AddLightGroup(LightGroup* lightGroup);
+	void Draw();
+	void DrawPoints();
+
+	void RegisterCoronas();
+
+	void Destroy();
+
 };

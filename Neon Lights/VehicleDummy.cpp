@@ -44,6 +44,7 @@ CVector VehicleDummy::GetTransformedPosition(CVehicle* vehicle, CVector position
 	auto c = rootFrame->child;
 
 	//Log::file << "child= " << GetFrameNodeName(c) << std::endl;
+
 	RwMatrixTransform(tempMat, RwFrameGetMatrix(rootFrame), rwCOMBINEREPLACE);
 
 	if (StringToUpper(GetFrameNodeName(c)).find(StringToUpper("chassis_dummy")) != -1)
