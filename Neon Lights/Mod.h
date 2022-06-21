@@ -16,6 +16,8 @@ public:
 
     static void SetPlayerControl(bool enabled);
 
+    static void ReloadConfig();
+
     static void ShowErrorMessage(std::string title, std::string content);
 
     template<class T>

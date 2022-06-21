@@ -1,6 +1,7 @@
 #include "WindowMain.h"
 
 #include "WindowLightGroup.h"
+#include "WindowPattern.h"
 
 #include "../Mod.h"
 
@@ -46,10 +47,13 @@ void WindowMain::Create()
 	auto buttonEditPatterns = window->AddButton(Localization::GetLine("main_edit_patterns"));
 	buttonEditPatterns->m_OnClick = [window]() {
 		Menu::RemoveWindow(window);
-		//WindowPattern::CreatePatterns();
+		WindowPattern::Create();
 	};
 
 	window->AddItem(Localization::GetLine("info_move_camera"));
 
 	if (Mod::m_IsSamp) window->AddItem(Localization::GetLine("info_hide_samp_chat"));
+
+	window->AddItem("- Made by Danilo1301");
+	window->AddItem("- Requested by G73D");
 }

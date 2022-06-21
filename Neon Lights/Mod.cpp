@@ -31,55 +31,66 @@ Mod::Mod()
 
 	Config::LoadJSON();
 
-	if (Patterns::m_Patterns.size() == 0)
+	if (Patterns::GetPatterns().size() == 0)
 	{
 		auto pattern1 = Patterns::CreatePattern("pattern1");
-		pattern1->AddColor({ 255, 0, 0 }, 500);
-		pattern1->AddColor({ 0, 255, 0 }, 500);
-		pattern1->AddColor({ 0, 0, 255 }, 500);
+		pattern1->AddStep({ 255, 0, 0 }, 500);
+		pattern1->AddStep({ 0, 255, 0 }, 500);
+		pattern1->AddStep({ 0, 0, 255 }, 500);
 
 		auto pattern2 = Patterns::CreatePattern("pattern2");
-		pattern2->AddColor({ 255, 255, 0 }, 500);
-		pattern2->AddColor({ 0, 255, 255 }, 500);
-		pattern2->AddColor({ 255, 0, 255 }, 500);
+		pattern2->AddStep({ 255, 255, 0 }, 500);
+		pattern2->AddStep({ 0, 255, 255 }, 500);
+		pattern2->AddStep({ 255, 0, 255 }, 500);
+
+		auto lightGroup1 = LightGroups::CreateLightGroup(481);
+		lightGroup1->AddPoint(CVector(-1, 0, 0));
+		lightGroup1->AddPoint(CVector(0, 1, 0));
+		lightGroup1->AddPoint(CVector(1, 0, 0));
+		lightGroup1->pattern = Patterns::GetPatterns()[0];
+
+		auto lightGroup2 = LightGroups::CreateLightGroup(481);
+		lightGroup2->AddPoint(CVector(-1, 0, 3));
+		lightGroup2->AddPoint(CVector(0, 1, 3));
 	}
 
 	Config::SaveJSON();
 
-	//
-
-	auto lightGroup1 = LightGroups::CreateLightGroup(481);
-	lightGroup1->AddPoint(CVector(-1, 0, 0));
-	lightGroup1->AddPoint(CVector(0, 1, 0));
-	lightGroup1->AddPoint(CVector(1, 0, 0));
-
-	//
 
 	Events::vehicleDtorEvent.after += [](CVehicle* vehicle)
 	{
 		if (Vehicles::HasVehicle(vehicle)) Vehicles::RemoveVehicle(vehicle);
 	};
 
-	Events::vehicleRenderEvent += [](CVehicle* veh)
+	Events::vehicleRenderEvent.after += [](CVehicle* veh)
 	{
 		if (Vehicles::HasVehicle(veh)) Vehicles::GetVehicle(veh)->RegisterCoronas();
 	};
 
-	Events::drawingEvent += Draw;
+	Events::drawingEvent.after += Draw;
 	Events::processScriptsEvent += Update;
 }
 
 void Mod::Update()
 {
 	Input::Update();
-
 	Menu::Update();
 
-	//if (Input::GetKey(17)) {
-		if (Input::GetKeyDown(48)) { //CTRL + N   78
-			ToggleMenu();
+	//17 + 78 ; ctrl + n
+	//48 ; 0
+	//17 + 16 + 68 ; ctrl + shift + d
+
+	if (Input::GetKey(17) && Input::GetKey(16)) {
+		if (Input::GetKeyDown(68)) {
+			m_EnableDebug = !m_EnableDebug;
+			CMessages::AddMessageJumpQ(m_EnableDebug ? "Debug enabled" : "Debug disabled", 1000, 0, false);
 		}
-	//}
+	}
+
+	if (Input::GetKey(17) && Input::GetKeyDown(78))
+	{
+		ToggleMenu();
+	}
 
 	//
 
@@ -94,24 +105,14 @@ void Mod::Update()
 		}
 	}
 	else {
-		//if (Vehicles::m_DrawVehicleFrames) Vehicles::m_DrawVehicleFrames = false;
-		//if (Vehicles::m_DrawVehiclePoints) Vehicles::m_DrawVehiclePoints = false;
+		Vehicle::m_DrawPoints = false;
 	}
 
 	//
 
-	if (Input::GetKey(17) && Input::GetKeyDown(78))
-	{
-		auto veh = FindPlayerVehicle(0, false);
-
-		if (veh > 0) {
-				
-		}
-	}
-
 	if (Input::GetKey(17)) {
 		if (Input::GetKeyDown(82)) {
-			CMessages::AddMessageJumpQ("Config reloaded", 1000, 0, false);
+			ReloadConfig();
 		}
 	}
 
@@ -128,31 +129,39 @@ void Mod::Draw()
 	CVector2D screenPos(200, 400);
 	char buffer[256];
 
-	sprintf(buffer, "Menu windows %d", Menu::m_Windows.size());
-	DrawScreenText(buffer, screenPos);
+	if (m_EnableDebug) {
 
-	screenPos.y += 20;
-
-	sprintf(buffer, "Vehicles: %d", Vehicles::GetVehicles().size());
-	DrawScreenText(buffer, screenPos);
-
-	screenPos.y += 20;
-
-	sprintf(buffer, "LightGroups:");
-	DrawScreenText(buffer, screenPos);
-
-	screenPos.y += 20;
-
-	for (auto lightGroup : LightGroups::GetLightGroups())
-	{
-		sprintf(buffer, "name= %s, id= %d", lightGroup->name.c_str(), lightGroup->modelId);
+		sprintf(buffer, "Menu windows %d", Menu::m_Windows.size());
 		DrawScreenText(buffer, screenPos);
+
 		screenPos.y += 20;
+
+		sprintf(buffer, "Vehicles: %d", Vehicles::GetVehicles().size());
+		DrawScreenText(buffer, screenPos);
+
+		screenPos.y += 20;
+
+		sprintf(buffer, "LightGroups:");
+		DrawScreenText(buffer, screenPos);
+
+		screenPos.y += 20;
+
+		for (auto lightGroup : LightGroups::GetLightGroups())
+		{
+			sprintf(buffer, "name= %s, id= %d", lightGroup->name.c_str(), lightGroup->modelId);
+			DrawScreenText(buffer, screenPos);
+			screenPos.y += 20;
+		}
 	}
 
 	for (auto vehicle : Vehicles::GetVehicles())
 	{
 		vehicle->Draw();
+
+		if (m_EnableDebug)
+		{
+			vehicle->DrawDebug();
+		}
 	}
 
 	Menu::Draw();
@@ -189,6 +198,25 @@ void Mod::ToggleMenu()
 void Mod::SetPlayerControl(bool enabled)
 {
 	Command<Commands::SET_PLAYER_CONTROL>(0, enabled);
+}
+
+void Mod::ReloadConfig()
+{
+	if (Menu::m_Visible) {
+		ToggleMenu();
+	}
+
+	CMessages::AddMessageJumpQ("Reloading config...", 1000, 0, false);
+
+	Vehicles::RemoveAllVehicles();
+	LightGroups::RemoveAllLightGroups();
+	Patterns::RemoveAllPatterns();
+
+	Config::LoadJSON();
+
+	Vehicles::TryAddAllVehicles();
+
+	CMessages::AddMessageJumpQ("Config reloaded", 1000, 0, false);
 }
 
 void Mod::ShowErrorMessage(std::string title, std::string content)

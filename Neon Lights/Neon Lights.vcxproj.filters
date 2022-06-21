@@ -12,7 +12,6 @@
       <Filter>json</Filter>
     </ClCompile>
     <ClCompile Include="VehicleDummy.cpp" />
-    <ClCompile Include="LightGroup.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="Vehicles.cpp" />
     <ClCompile Include="log\Log.cpp">
@@ -59,6 +58,12 @@
       <Filter>localization</Filter>
     </ClCompile>
     <ClCompile Include="windows\WindowLightGroup.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\WindowPoint.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\WindowPattern.cpp">
       <Filter>windows</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,6 +148,13 @@
       <Filter>localization</Filter>
     </ClInclude>
     <ClInclude Include="windows\WindowLightGroup.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\WindowPoint.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="LightGroupData.h" />
+    <ClInclude Include="windows\WindowPattern.h">
       <Filter>windows</Filter>
     </ClInclude>
   </ItemGroup>

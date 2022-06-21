@@ -47,7 +47,7 @@ CVector VehicleDummy::GetTransformedPosition(CVehicle* vehicle, CVector position
 
 	RwMatrixTransform(tempMat, RwFrameGetMatrix(rootFrame), rwCOMBINEREPLACE);
 
-	if (StringToUpper(GetFrameNodeName(c)).find(StringToUpper("chassis_dummy")) != -1)
+	if (ToLower(GetFrameNodeName(c)).find("chassis_dummy") != -1)
 	{
 		RwMatrixTransform(tempMat, RwFrameGetMatrix(c), rwCOMBINEPRECONCAT);
 	}
@@ -79,9 +79,9 @@ CVector VehicleDummy::FindTransformedDummyPosition(CVehicle* vehicle, std::strin
 
 	for (auto frame : frames)
 	{
-		std::string frameName = StringToUpper(GetFrameNodeName(frame));
+		std::string frameName = ToLower(GetFrameNodeName(frame));
 
-		if (frameName.compare(StringToUpper(dummyName)) == 0) {
+		if (frameName.compare(ToLower(dummyName)) == 0) {
 			return VehicleDummy::GetTransformedDummyPosition(vehicle, frame, offset);
 		}
 	}

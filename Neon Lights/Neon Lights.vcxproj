@@ -102,7 +102,6 @@
     <ClCompile Include="..\include\json_writer.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="input\Input.cpp" />
-    <ClCompile Include="LightGroup.cpp" />
     <ClCompile Include="LightGroups.cpp" />
     <ClCompile Include="localization\Localization.cpp" />
     <ClCompile Include="log\Log.cpp" />
@@ -123,11 +122,14 @@
     <ClCompile Include="Vehicles.cpp" />
     <ClCompile Include="windows\WindowLightGroup.cpp" />
     <ClCompile Include="windows\WindowMain.cpp" />
+    <ClCompile Include="windows\WindowPattern.cpp" />
+    <ClCompile Include="windows\WindowPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="LightGroup.h" />
+    <ClInclude Include="LightGroupData.h" />
     <ClInclude Include="LightGroups.h" />
     <ClInclude Include="localization\Localization.h" />
     <ClInclude Include="log\Log.h" />
@@ -151,6 +153,8 @@
     <ClInclude Include="Vehicles.h" />
     <ClInclude Include="windows\WindowLightGroup.h" />
     <ClInclude Include="windows\WindowMain.h" />
+    <ClInclude Include="windows\WindowPattern.h" />
+    <ClInclude Include="windows\WindowPoint.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\json_valueiterator.inl" />

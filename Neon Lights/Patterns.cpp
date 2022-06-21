@@ -18,14 +18,25 @@ Pattern* Patterns::GetPattern(std::string name)
 	return nullptr;
 }
 
-void Patterns::RemovePatterns()
+void Patterns::RemovePattern(Pattern* pattern)
 {
-	for (auto pattern : m_Patterns) {
-		for (auto step : pattern->steps) {
-			delete step;
-		}
-		pattern->steps.clear();
-		delete pattern;
+	m_Patterns.erase(std::find(m_Patterns.begin(), m_Patterns.end(), pattern));
+
+	Log::file << "[Patterns] RemovePattern '" << pattern->name << "' (" << std::to_string(m_Patterns.size()) + " total)" << std::endl;
+
+	delete pattern;
+}
+
+void Patterns::RemoveAllPatterns()
+{
+	Log::file << "[Patterns] RemoveAllPatterns" << std::endl;
+
+	while (m_Patterns.size() > 0) {
+		RemovePattern(m_Patterns[0]);
 	}
-	m_Patterns.clear();
+}
+
+std::vector<Pattern*> Patterns::GetPatterns()
+{
+	return m_Patterns;
 }

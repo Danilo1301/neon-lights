@@ -11,4 +11,18 @@ public:
 	{
 		return offset;
 	}
+
+	Json::Value ToJSON()
+	{
+		Json::Value value = Json::objectValue;
+
+		value["offset"] = CVectorToJSON(offset);
+		
+		return value;
+	}
+
+	void FromJSON(Json::Value value)
+	{
+		offset = CVectorFromJSON(value["offset"]);
+	}
 };
