@@ -89,7 +89,19 @@ void Mod::Update()
 
 	if (Input::GetKey(17) && Input::GetKeyDown(78))
 	{
-		ToggleMenu();
+		if (Input::GetKey(16)) {
+			ToggleMenu();
+		}
+		else {
+			auto veh = FindPlayerVehicle(0, false);
+
+			if (veh > 0) {
+				if (Vehicles::HasVehicle(veh)) {
+					auto vehicle = Vehicles::GetVehicle(veh);
+					vehicle->m_Enabled = !vehicle->m_Enabled;
+				}
+			}
+		}
 	}
 
 	//
@@ -170,11 +182,16 @@ void Mod::Draw()
 void Mod::ToggleMenu()
 {
 	if (!Menu::m_Visible) {
-		WindowMain::m_Vehicle = FindPlayerVehicle(0, false);
-		if (!WindowMain::m_Vehicle) {
+		auto veh = FindPlayerVehicle(0, false);
+
+		if (!veh) {
 			Localization::PrintString("error_need_vehicle", 1000);
 			return;
 		}
+
+		WindowMain::m_Vehicle = veh;
+
+		if (Vehicles::HasVehicle(veh)) Vehicles::GetVehicle(veh)->m_Enabled = true;
 	}
 
 	Menu::m_Visible = !Menu::m_Visible;

@@ -116,14 +116,16 @@ void Vehicle::RegisterCoronas()
 		RegisterPointCoronas();
 	}
 
-	for (auto pair : m_LightGroupData)
-	{
-		auto lightGroup = pair.first;
-		auto lightGroupData = pair.second;
+	if (m_Enabled) {
+		for (auto pair : m_LightGroupData)
+		{
+			auto lightGroup = pair.first;
+			auto lightGroupData = pair.second;
 
-		if (!lightGroup->pattern) continue;
+			if (!lightGroup->pattern) continue;
 
-		RegisterLightGroupCoronas(lightGroupData);
+			RegisterLightGroupCoronas(lightGroupData);
+		}
 	}
 }
 

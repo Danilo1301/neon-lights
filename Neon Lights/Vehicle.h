@@ -12,6 +12,7 @@ public:
 	static bool m_DrawPoints;
 
 	unsigned int m_PrevTime= 0;
+	bool m_Enabled = true;
 
 	CVehicle* m_Vehicle;
 

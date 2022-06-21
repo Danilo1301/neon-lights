@@ -1,11 +1,16 @@
 #include "Vehicles.h"
 
 #include "Mod.h"
+#include "LightGroups.h"
 
 std::map<CVehicle*, Vehicle*> Vehicles::m_Vehicles;
 
 void Vehicles::TryAddVehicle(CVehicle* veh)
 {
+	auto lightGroups = LightGroups::GetLightGroups(veh->m_nModelIndex);
+
+	if (lightGroups.size() == 0) return;
+
 	if (HasVehicle(veh)) return;
 
 	auto modelId = veh->m_nModelIndex;
