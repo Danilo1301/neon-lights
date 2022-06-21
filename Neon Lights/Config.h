@@ -7,6 +7,7 @@ public:
 	static std::string m_DataPath;
 	static std::string m_VehiclesPath;
 	static std::string m_PatternsPath;
+	static std::string m_LocalizationPath;
 
 	static void SaveJSON();
 	static void DeleteAllConfig();

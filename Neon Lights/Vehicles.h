@@ -5,9 +5,9 @@
 #include "Vehicle.h"
 
 class Vehicles {
+private:
+	static std::map<CVehicle*, Vehicle*> m_Vehicles;
 public:
-	static std::map<CVehicle*, Vehicle*> m_VehicleMap;
-
 	static void TryAddVehicle(CVehicle* veh);
 	static bool HasVehicle(CVehicle* veh);
 	static Vehicle* AddVehicle(CVehicle* veh);
@@ -15,4 +15,5 @@ public:
 	static void RemoveVehicle(CVehicle* veh);
 	static void RemoveAllVehicles();
 	static void TryAddAllVehicles();
+	static std::vector<Vehicle*> GetVehicles();
 };

@@ -1,49 +1,119 @@
 #pragma once
 
 #include "pch.h"
-#include "Dummy.h"
+#include "Point.h"
 #include "Pattern.h"
-
-struct LightGroupCloneSettings
-{
-	Dummy* toDummy;
-	bool flipX;
-	bool flipY;
-};
+#include "Patterns.h"
 
 class LightGroup {
 public:
-	std::string name;
 	int modelId;
-	Pattern* pattern;
-	std::vector<Dummy*> dummies;
-	std::vector<LightGroupCloneSettings*> clones;
+	std::string name = "Light Group";
 
-	int amount = 1;
+	CVector position = CVector(0, 0, 0);
+	int amountLights = 30;
+	Pattern* pattern = NULL;
 	float size = 0.2f;
-	int offsetBy = 0;
 	bool lerpColor = true;
-	float farClip = 600.0f;
-	float nearClip = 0.05f;
+	float nearClip = 0.01f;
+	float farClip = 800.0f;
+	int offsetBy = 0;
+	int lightIdOffset = 0;
 
-	Dummy* AddDummy(CVector offset) {
-		Dummy* dummy = new Dummy();
-		dummy->name = "";
-		dummy->offset = offset;
-		AddDummy(dummy);
-		return dummy;
+	std::vector<Point*> points;
+
+	LightGroup(int modelId)
+	{
+		this->modelId = modelId;
 	}
 
-	void AddDummy(Dummy* dummy) {
-		dummies.push_back(dummy);
+	Point* AddPoint(CVector offset)
+	{
+		Point* point = new Point();
+		point->offset = offset;
+		points.push_back(point);
+		return point;
 	}
-};
 
-class LightGroups {
-public:
-	static std::map<int, std::vector<LightGroup*>> m_LightGroups;
+	void RemovePoint(Point* point)
+	{
+		auto it = std::find(points.begin(), points.end(), point);
+		if (it == points.end()) return;
+		points.erase(it);
+		delete point;
+	}
 
-	static LightGroup* CreateLightGroup(std::string name, int modelId, Pattern* pattern);
-	static void RemoveAllLightGroups();
-	static bool HasLightGroupForModel(int modelId);
+	CVector GetPointPosition(Point* point, CVehicle* vehicle)
+	{
+		auto offset = this->position + point->GetOffset();
+		auto position = VehicleDummy::GetTransformedPosition(vehicle, offset);
+
+		return position;
+	}
+
+	void Destroy()
+	{
+		while (points.size() > 0) RemovePoint(points[0]);
+	}
+
+	Json::Value ToJSON() {
+		Json::Value value = Json::objectValue;
+
+		value["modelId"] = modelId;
+		value["name"] = name;
+
+		value["position"] = CVectorToJSON(position);
+		value["amountLights"] = amountLights;
+
+		value["pattern"] = pattern ? Patterns::FindPatternIndex(pattern) : -1;
+		
+		value["size"] = size;
+		value["lerpColor"] = lerpColor;
+		value["nearClip"] = nearClip;
+		value["farClip"] = farClip;
+		value["offsetBy"] = offsetBy;
+		value["lightIdOffset"] = lightIdOffset;
+		
+		value["points"] = Json::arrayValue;
+		for (auto point : points) {
+			value["points"].append(point->ToJSON());
+		}
+
+		return value;
+	}
+
+	void FromJSON(Json::Value value) {
+		modelId = value["modelId"].asInt();
+		name = value["name"].asString();
+
+		position = CVectorFromJSON(value["position"]);
+		amountLights = value["amountLights"].asInt();
+
+		pattern = Patterns::FindPatternByIndex(value["pattern"].asInt());
+
+		size = value["size"].asFloat();
+		lerpColor = value["lerpColor"].asBool();
+		nearClip = value["nearClip"].asFloat();
+		farClip = value["farClip"].asFloat();
+		offsetBy = value["offsetBy"].asInt();
+		lightIdOffset = value["lightIdOffset"].asInt();
+
+		for (size_t i = 0; i < value["points"].size(); i++)
+		{
+			Json::Value pointValue = value["points"][i];
+
+			Point* point = new Point();
+			point->FromJSON(pointValue);
+			points.push_back(point);
+		}
+	}
+
+	void FlipPoints(bool horizontal, bool vertical)
+	{
+		for (auto point : points)
+		{
+			if (horizontal) point->offset.x *= -1;
+			if (vertical) point->offset.y *= -1;
+		}
+	}
 };

@@ -12,8 +12,6 @@
       <Filter>json</Filter>
     </ClCompile>
     <ClCompile Include="VehicleDummy.cpp" />
-    <ClCompile Include="LightGroup.cpp" />
-    <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Vehicle.cpp" />
     <ClCompile Include="Vehicles.cpp" />
     <ClCompile Include="log\Log.cpp">
@@ -50,6 +48,24 @@
       <Filter>menu\item</Filter>
     </ClCompile>
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="Patterns.cpp" />
+    <ClCompile Include="LightGroups.cpp" />
+    <ClCompile Include="TestHelper.cpp" />
+    <ClCompile Include="windows\WindowMain.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="localization\Localization.cpp">
+      <Filter>localization</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\WindowLightGroup.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\WindowPoint.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\WindowPattern.cpp">
+      <Filter>windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="json">
@@ -67,6 +83,12 @@
     <Filter Include="menu\item">
       <UniqueIdentifier>{2e21e90c-889e-40aa-8d69-d4b0bd24ca9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="windows">
+      <UniqueIdentifier>{6097a2bb-2773-442c-9323-36f0a1a53ef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="localization">
+      <UniqueIdentifier>{a8d3cd8b-e97f-4849-9c99-f0aff8a3dc79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\json_valueiterator.inl">
@@ -75,7 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VehicleDummy.h" />
-    <ClInclude Include="Dummy.h" />
     <ClInclude Include="LightGroup.h" />
     <ClInclude Include="Mod.h" />
     <ClInclude Include="Pattern.h" />
@@ -116,5 +137,25 @@
       <Filter>menu\item</Filter>
     </ClInclude>
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Patterns.h" />
+    <ClInclude Include="LightGroups.h" />
+    <ClInclude Include="TestHelper.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="windows\WindowMain.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="localization\Localization.h">
+      <Filter>localization</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\WindowLightGroup.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\WindowPoint.h">
+      <Filter>windows</Filter>
+    </ClInclude>
+    <ClInclude Include="LightGroupData.h" />
+    <ClInclude Include="windows\WindowPattern.h">
+      <Filter>windows</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
