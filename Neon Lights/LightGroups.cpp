@@ -18,13 +18,12 @@ std::vector<LightGroup*> LightGroups::GetLightGroups()
 
 std::vector<LightGroup*> LightGroups::GetLightGroups(int modelId)
 {
+	auto lightGroups = GetLightGroups();
 	std::vector<LightGroup*> groups;
-	for (auto p : m_Groups)
+	for (auto group : lightGroups)
 	{
-		for (auto v : p.second)
-		{
-			if (v->modelId != modelId) continue;
-			groups.push_back(v);
+		if (group->modelId == modelId) {
+			groups.push_back(group);
 		}
 	}
 	return groups;

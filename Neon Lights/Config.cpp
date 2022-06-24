@@ -20,6 +20,16 @@ void Config::SaveJSON() {
 
 	DeleteAllConfig();
 
+	auto pathSettings = m_DataPath + "settings.json";
+
+	Json::Value settingsValue = Json::objectValue;
+
+	//value["material_ambient"] = Vehicle::m_MatAmbient;
+
+	WriteToFile(pathSettings, settingsValue);
+	
+	//
+
 	auto patterns = Patterns::GetPatterns();
 
 	for (size_t i = 0; i < patterns.size(); i++)
@@ -30,6 +40,8 @@ void Config::SaveJSON() {
 
 		WriteToFile(m_DataPath + m_PatternsPath + std::to_string(i) + ".json", value);
 	}
+
+	//
 
 	auto lightGroups = LightGroups::GetLightGroups();
 
@@ -54,6 +66,22 @@ void Config::DeleteAllConfig() {
 	Log::file << "[Config] DeleteAllConfig" << std::endl;
 
 	std::filesystem::remove_all(m_DataPath + "settings.json");
+
+	//
+
+	std::string pathPatterns = GetFullPath(m_DataPath + m_PatternsPath);
+
+	for (const auto& entry : std::filesystem::directory_iterator(pathPatterns)) {
+		std::filesystem::remove_all(entry.path());
+	}
+
+	//
+
+	std::string pathVehicles = GetFullPath(m_DataPath + m_VehiclesPath);
+
+	for (const auto& entry : std::filesystem::directory_iterator(pathVehicles)) {
+		std::filesystem::remove_all(entry.path());
+	}
 }
 
 void Config::LoadJSON() {
@@ -63,8 +91,6 @@ void Config::LoadJSON() {
 	CreatePath(m_DataPath + m_PatternsPath);
 	CreatePath(m_DataPath + m_VehiclesPath);
 	CreatePath(m_DataPath + m_LocalizationPath);
-
-	Log::file << "[Config] Config l	oaded" << std::endl;
 
 	std::string pathPattenrs = m_DataPath + m_PatternsPath;
 
@@ -116,6 +142,8 @@ void Config::LoadJSON() {
 			Localization::RegisterLine(member, language, value[member].asString());
 		}
 	}
+
+	Log::file << "[Config] Config loaded" << std::endl;
 }
 
 std::string Config::GetFullPath(std::string path) {
