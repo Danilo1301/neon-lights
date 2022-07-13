@@ -1,3 +1,8 @@
+### Versão com menu:
+https://github.com/Danilo1301/neon-lights/tree/v2
+
+<br>
+
 ### Teclas:
 <p>CTRL + R: Reinicia a config</p>
 <p>CTRL + N: Liga/desliga as luzes</p>
