@@ -19,6 +19,11 @@ void VehicleDummy::FindDummies(CVehicle* vehicle, RwFrame* frame) {
 	m_Frames.push_back(frame);
 }
 
+void VehicleDummy::CreateTempMatrix()
+{
+	if (!tempMat) tempMat = RwMatrixCreate();
+}
+
 std::vector<RwFrame*> VehicleDummy::GetFramesOnVehicle(CVehicle* vehicle) {
 	m_Frames.clear();
 	FindDummies(vehicle, (RwFrame*)vehicle->m_pRwClump->object.parent);
@@ -37,21 +42,34 @@ std::vector<RwFrame*> VehicleDummy::GetFrameHierarchy(RwFrame* frame, RwFrame* r
 	return hie;
 }
 
-CVector VehicleDummy::GetTransformedPosition(CVehicle* vehicle, CVector position) {
-	if (!tempMat) tempMat = RwMatrixCreate();
+/*
+Takes the vehicle world position and adds offset
+*/
+CVector VehicleDummy::GetTransformedPosition(CVehicle* vehicle, CVector offset) {
+	CreateTempMatrix();
 
 	auto rootFrame = (RwFrame*)vehicle->m_pRwClump->object.parent;
 	auto c = rootFrame->child;
 
+	//Log::file << "child= " << GetFrameNodeName(c) << std::endl;
+
 	RwMatrixTransform(tempMat, RwFrameGetMatrix(rootFrame), rwCOMBINEREPLACE);
-	RwMatrixTransform(tempMat, RwFrameGetMatrix(c), rwCOMBINEPRECONCAT);
-	RwMatrixTranslate(tempMat, &position.ToRwV3d(), rwCOMBINEPRECONCAT);
+
+	if (ToLower(GetFrameNodeName(c)).find("chassis_dummy") != -1)
+	{
+		RwMatrixTransform(tempMat, RwFrameGetMatrix(c), rwCOMBINEPRECONCAT);
+	}
+
+	RwMatrixTranslate(tempMat, &offset.ToRwV3d(), rwCOMBINEPRECONCAT);
 
 	return CVector(tempMat->pos.x, tempMat->pos.y, tempMat->pos.z);
 }
 
+/*
+Takes the world position of a dummy and adds offset from its position
+*/
 CVector VehicleDummy::GetTransformedDummyPosition(CVehicle* vehicle, RwFrame* dummy, CVector offset) {
-	if (!tempMat) tempMat = RwMatrixCreate();
+	CreateTempMatrix();
 
 	auto rootFrame = (RwFrame*)vehicle->m_pRwClump->object.parent;
 
@@ -67,17 +85,49 @@ CVector VehicleDummy::GetTransformedDummyPosition(CVehicle* vehicle, RwFrame* du
 	return CVector(tempMat->pos.x, tempMat->pos.y, tempMat->pos.z);
 }
 
-CVector VehicleDummy::FindTransformedDummyPosition(CVehicle* vehicle, std::string dummyName, CVector offset) {
+/*
+Takes the world position of a dummy (by name) and adds offset from its position
+*/
+CVector VehicleDummy::GetTransformedDummyPositionByName(CVehicle* vehicle, std::string dummyName, CVector offset) {
+	auto frames = VehicleDummy::GetFramesOnVehicle(vehicle);
+
+	auto frame = FindDummy(vehicle, dummyName);
+
+	if (!frame) return CVector(0, 0, 0);
+
+	return VehicleDummy::GetTransformedDummyPosition(vehicle, frame, offset);
+}
+
+RwFrame* VehicleDummy::FindDummy(CVehicle* vehicle, std::string dummyName) {
 	auto frames = VehicleDummy::GetFramesOnVehicle(vehicle);
 
 	for (auto frame : frames)
 	{
-		std::string frameName = StringToUpper(GetFrameNodeName(frame));
+		std::string frameName = ToLower(GetFrameNodeName(frame));
 
-		if (frameName.compare(StringToUpper(dummyName)) == 0) {
-			return VehicleDummy::GetTransformedDummyPosition(vehicle, frame, offset);
+		if (frameName.compare(ToLower(dummyName)) == 0) {
+			return frame;
 		}
 	}
 
-	return CVector(0, 0, 0);
+	return NULL;
+}
+
+CVector VehicleDummy::GetDummyOffset(CVehicle* vehicle, std::string dummyName) {
+	CVector offset = CVector(0, 0, 0);
+	auto dummy = FindDummy(vehicle, dummyName);
+
+	if (dummy == NULL) return offset;
+
+	auto rootFrame = (RwFrame*)vehicle->m_pRwClump->object.parent;
+
+	auto hierarchy = GetFrameHierarchy(dummy, rootFrame);
+	for (auto hf : hierarchy) {
+
+		auto pos = GetFrameNodePosition(hf);
+
+		offset += pos;
+	}
+
+	return offset;
 }

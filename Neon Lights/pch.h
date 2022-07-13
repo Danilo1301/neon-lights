@@ -104,9 +104,57 @@ static std::string FormatCVector(CVector vec) {
 	return std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z);
 }
 
-static std::string StringToUpper(std::string data) {
+static std::string ToUpper(std::string data) {
 	std::for_each(data.begin(), data.end(), [](char& c) {
 		c = ::toupper(c);
-	});
+		});
 	return data;
 }
+
+static std::string ToLower(std::string data) {
+	std::for_each(data.begin(), data.end(), [](char& c) {
+		c = ::tolower(c);
+		});
+	return data;
+}
+
+//
+
+static float TotalDistanceBetweenPoints(std::vector<CVector> points) {
+	float totalDistance = 0.0f;
+	for (size_t i = 0; i < points.size() - 1; i++)
+		totalDistance += DistanceBetweenPoints(points[i], points[i + 1]);
+	return totalDistance;
+}
+
+static CVector PointInLines(std::vector<CVector> points, float position) {
+	static char buffer[512];
+
+	float totalDistance = TotalDistanceBetweenPoints(points);
+
+	float distance = 0.0f;
+	float toLerp = 0.0f;
+
+	int point = -1;
+
+	while (distance < position && point < (int)points.size())
+	{
+		point++;
+
+		float len = DistanceBetweenPoints(points[point], points[point + 1]);
+
+		toLerp = (position - distance) / len;
+
+		//sprintf(buffer, "point %d; position %.2f; distance %.2f; len %.2f; toLerp %.2f", point, position, distance, len, toLerp);
+		//MessageBox(HWND_DESKTOP, buffer, "", MB_ICONERROR);
+
+		distance += len;
+	}
+
+	if (point == -1) return points[0];
+
+	return CVectorLerp(points[point + 1], points[point], toLerp);
+}
+
+
+//

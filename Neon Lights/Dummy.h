@@ -5,13 +5,24 @@
 
 class Dummy {
 public:
-	std::string name;
-	CVector offset;
+	std::string name = "";
+	CVector offset = CVector(0, 0, 0);
 
-	CVector GetTransformedPosition(CVehicle* vehicle) {
-		if (name.empty()) return VehicleDummy::GetTransformedPosition(vehicle, offset);
+	CVector GetPosition(CVehicle* vehicle)
+	{
+		return VehicleDummy::GetTransformedPosition(vehicle, GetOffset());
+	}
 
-		return VehicleDummy::FindTransformedDummyPosition(vehicle, name, CVector(0, 0, 0));
+	CVector GetOffset()
+	{
+		return offset;
+	}
+
+	void UpdateOffset(CVehicle* vehicle)
+	{
+		if (name.empty()) return;
+
+		offset = VehicleDummy::GetDummyOffset(vehicle, name);
 	}
 
 	static Dummy* FromJSON(Json::Value value) {

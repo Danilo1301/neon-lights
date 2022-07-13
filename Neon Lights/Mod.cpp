@@ -7,7 +7,7 @@ bool firstLoad = true;
 
 bool Mod::m_EnableDebug = false;
 
-std::string Mod::m_Version = "1.2.1";
+std::string Mod::m_Version = "1.3";
 std::string Mod::m_Name = "Neon Lights";
 
 Mod::Mod() {
@@ -94,7 +94,7 @@ void Mod::Update() {
 	}
 
 	if (Input::GetKey(17) && Input::GetKey(16)) {
-		if (Input::GetKeyDown(82)) {
+		if (Input::GetKeyDown(68)) {
 			Mod::m_EnableDebug = !Mod::m_EnableDebug;
 			CMessages::AddMessageJumpQ(Mod::m_EnableDebug ? "Debug enabled" : "Debug disabled", 1000, 0, false);
 		}
@@ -125,6 +125,8 @@ void Mod::LoadConfig() {
 	std::string path = PLUGIN_PATH("\\NeonLights.config.json");
 	std::ifstream file(path);
 
+	Log::file << "------------------------------------" << std::endl;
+	Log::file << "* RELOAD *" << std::endl;
 	Log::file << "------------------------------------" << std::endl;
 	Log::file << "Loading config from: " << path << std::endl;
 
@@ -169,12 +171,14 @@ void Mod::LoadConfig() {
 		}
 
 		auto lightGroup = LightGroups::CreateLightGroup(groupName, vehicle, pattern);
-		lightGroup->amount = group["amount"].asInt();
+		//lightGroup->amount = group["amount"].asInt();
+		lightGroup->lightsDistance = ValidateValue(group["lights_distance"], lightGroup->lightsDistance).asFloat();
 		lightGroup->offsetBy = group["offsetBy"].asInt();
 		lightGroup->size = group["size"].asFloat();
 		lightGroup->lerpColor = group["lerpColor"].asBool();
 		lightGroup->farClip = ValidateValue(group["farClip"], lightGroup->farClip).asFloat();
 		lightGroup->nearClip = ValidateValue(group["nearClip"], lightGroup->nearClip).asFloat();
+		lightGroup->fixPatternOffset = ValidateValue(group["fixPatternOffset"], lightGroup->fixPatternOffset).asBool();
 
 		for (size_t i = 0; i < group["dummies"].size(); i++)
 		{
@@ -186,16 +190,17 @@ void Mod::LoadConfig() {
 		{
 			for (size_t i = 0; i < group["clone_to"].size(); i++)
 			{
-				/*
 				Json::Value cloneValue = group["clone_to"][i];
 
 				auto clone = new LightGroupCloneSettings({
 					Dummy::FromJSON(cloneValue["dummy"]),
 					ValidateValue(cloneValue["flipX"], false).asBool(),
 					ValidateValue(cloneValue["flipY"], false).asBool(),
+					ValidateValue(cloneValue["invertOffset"], false).asBool()
 				});
-				*/
+				
 
+				/*
 				auto dummy = Dummy::FromJSON(group["clone_to"][i]);
 
 				auto clone = new LightGroupCloneSettings({
@@ -203,6 +208,7 @@ void Mod::LoadConfig() {
 					false,
 					false
 				});
+				*/
 
 				lightGroup->clones.push_back(clone);
 			}

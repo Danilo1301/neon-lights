@@ -6,17 +6,29 @@
 
 struct CoronaGroup
 {
-	int offsetId = 0;
-	CVector startPosition = CVector(0, 0, 0);
+	CVector startPosition;
 	std::vector<CVector> offsets;
+	float totalDistance = 0.0f;
+	float jumpDistance = 0.0f;
+	bool invertOffset = false;
+	bool keepGlobalOffset = false;
+
+	void UpdateTotalDistance() {
+		totalDistance = TotalDistanceBetweenPoints(offsets);
+	}
 };
 
-float TotalDistanceBetweenPoints(std::vector<CVector> points) {
-	float totalDistance = 0.0f;
-	for (size_t i = 0; i < points.size() - 1; i++)
-		totalDistance += DistanceBetweenPoints(points[i], points[i + 1]);
-	return totalDistance;
+int GetAmountOfLightsInLine(float totalDistance, float minDistance)
+{
+	return (int)floor(totalDistance / minDistance);
 }
+
+int GetAmountOfLightsInLine(CVector start, CVector end, float minDistance)
+{
+	auto totalDistance = DistanceBetweenPoints(start, end);
+	return GetAmountOfLightsInLine(totalDistance, minDistance);
+}
+
 
 int GetPatternMaxTime(Pattern* pattern) {
 	int time = 0;
@@ -56,35 +68,6 @@ void GetPatternStepAndTime(Pattern* pattern, int time, int& outTime, int& outSte
 	outStep = stepIndex;
 }
 
-CVector PointInLines(std::vector<CVector> points, float position) {
-	static char buffer[512];
-
-	float totalDistance = TotalDistanceBetweenPoints(points);
-
-	float distance = 0.0f;
-	float toLerp = 0.0f;
-
-	int point = -1;
-
-	while (distance < position && point < (int)points.size())
-	{
-		point++;
-
-		float len = DistanceBetweenPoints(points[point], points[point + 1]);
-
-		toLerp = (position - distance) / len;
-		
-		//sprintf(buffer, "point %d; position %.2f; distance %.2f; len %.2f; toLerp %.2f", point, position, distance, len, toLerp);
-		//MessageBox(HWND_DESKTOP, buffer, "", MB_ICONERROR);
-
-		distance += len;
-	}
-
-	if (point == -1) return points[0];
-
-	return CVectorLerp(points[point + 1], points[point], toLerp);
-}
-
 Vehicle::Vehicle(CVehicle* vehicle) {
 	m_Vehicle = vehicle;
 
@@ -113,12 +96,12 @@ void Vehicle::DrawDebug() {
 		auto lightGroup = lightGroupData->lightGroup;
 
 		sprintf(buffer, "%s~n~%d", lightGroup->name.c_str(), lightGroupData->patternProgress);
-		DrawWorldText(buffer, lightGroup->dummies[0]->GetTransformedPosition(m_Vehicle) + CVector(0, 0, 0.5f));
+		DrawWorldText(buffer, lightGroup->dummies[0]->GetPosition(m_Vehicle) + CVector(0, 0, 0.5f));
 
 		for (auto dummy : lightGroup->dummies)
 		{
 			sprintf(buffer, "dummy~n~%s~n~%s", dummy->name.c_str(), lightGroup->name.c_str());
-			DrawWorldText(buffer, dummy->GetTransformedPosition(m_Vehicle));
+			DrawWorldText(buffer, dummy->GetPosition(m_Vehicle));
 		}
 	}
 }
@@ -133,101 +116,154 @@ void Vehicle::RegisterCoronas() {
 	for (LightGroupData* lightGroupData : m_LightGroupData)
 	{
 		auto lightGroup = lightGroupData->lightGroup;
-
 		Pattern* pattern = lightGroup->pattern;
 
 		//
+
 		std::vector<CoronaGroup*> coronaGroups;
-		std::vector<CoronaGroup*> mainCoronaGroups;
 
-		CoronaGroup* coronaGroup = NULL;
+		CoronaGroup* currentCoronaGroup = new CoronaGroup();
 
-		CVector mainStartPosition = CVector(0, 0, 0);
-		if (lightGroup->dummies.size() > 0) mainStartPosition = lightGroup->dummies[0]->GetTransformedPosition(m_Vehicle);
-
-		//Log::file << "[LIGHT GROUP DATA]" << std::endl;
-
-		int offsetId = 0;
+		coronaGroups.push_back(currentCoronaGroup);
 
 		for (int i = 0; i < (int)lightGroup->dummies.size(); i++)
 		{
-			Dummy* dummy = lightGroup->dummies[i];
+			auto dummy = lightGroup->dummies[i];
 
 			if (dummy->name == "-")
 			{
-				coronaGroup = NULL;
+				currentCoronaGroup = new CoronaGroup();
+				currentCoronaGroup->keepGlobalOffset = true;
+				coronaGroups.push_back(currentCoronaGroup);
+
 				continue;
 			}
 
-			if (coronaGroup == NULL)
-			{
-				coronaGroup = new CoronaGroup();
-				coronaGroup->startPosition = mainStartPosition;
-				coronaGroup->offsetId = offsetId;
+			CVector offset = dummy->GetOffset();
 
-				coronaGroups.push_back(coronaGroup);
-				mainCoronaGroups.push_back(coronaGroup);
+			if (currentCoronaGroup->offsets.size() == 0) {
+				currentCoronaGroup->startPosition = offset;
 
-				offsetId++;
+				offset.Set(0, 0, 0);
+			}
+			else {
+				offset -= currentCoronaGroup->startPosition;
 			}
 
-			CVector position = dummy->GetTransformedPosition(m_Vehicle);
-			CVector offset = coronaGroup->startPosition - position;
-			coronaGroup->offsets.push_back(offset);
-			
+			if (currentCoronaGroup->offsets.size() == 0 && coronaGroups.size() > 1)
+			{
+				auto prevCoronaGroup = coronaGroups[coronaGroups.size() - 2];
+				auto lastOffset = prevCoronaGroup->offsets[prevCoronaGroup->offsets.size() - 1];
 
-			//Log::file << "[dummy offset] " << FormatCVector(offset) << std::endl;
+
+				currentCoronaGroup->jumpDistance = DistanceBetweenPoints(prevCoronaGroup->startPosition + lastOffset, currentCoronaGroup->startPosition + offset);
+			}
+
+			currentCoronaGroup->offsets.push_back(offset);
+
 		}
 
-		
-		//coronaGroups.push_back(mainCoronaGroup);
+		std::vector<CoronaGroup*> toAdd;
 
-		//
-
-		
 		for (auto clone : lightGroup->clones)
 		{
-			for (auto cg : mainCoronaGroups)
+			if (coronaGroups.size() == 0) break;
+
+			clone->toDummy->UpdateOffset(m_Vehicle);
+
+			auto startPosition = clone->toDummy->GetOffset();
+
+			for (auto coronaGroup : coronaGroups)
 			{
-				CoronaGroup* coronaGroup = new CoronaGroup();
-				coronaGroup->startPosition = clone->toDummy->GetTransformedPosition(m_Vehicle);
-		
-				for (auto offset : cg->offsets)
-				{
-					if (clone->flipX) offset.x = -offset.x;
-					if (clone->flipY) offset.y = -offset.y;
-
-					coronaGroup->offsets.push_back(offset);
-				}
-
-				coronaGroups.push_back(coronaGroup);
-			}
-		}
-		
-
-		//
-
-
-		int cn = -1;
-		for (auto coronaGroup : coronaGroups)
-		{
-			cn++;
-
-			float totalDistance = TotalDistanceBetweenPoints(coronaGroup->offsets);
-			for (int i = 0; i < lightGroup->amount; i++)
-			{
-				float linePosition = totalDistance / (lightGroup->amount - 1) * i;
-
-				CVector offsetPosition = PointInLines(coronaGroup->offsets, linePosition);
-				CVector position = coronaGroup->startPosition - offsetPosition;
+				auto clonedCoronaGroup = new CoronaGroup();
+				clonedCoronaGroup->jumpDistance = coronaGroup->jumpDistance;
+				clonedCoronaGroup->invertOffset = clone->invertOffset;
 
 				//
 
+				auto startPositionDiff = (coronaGroup->startPosition - coronaGroups[0]->startPosition);
+				if (clone->flipX) {
+					startPositionDiff.x = -startPositionDiff.x;
+				}
+				if (clone->flipY) {
+					startPositionDiff.y = -startPositionDiff.y;
+				}
+				startPosition += startPositionDiff;
+
+				clonedCoronaGroup->startPosition = startPosition;
+
+				//
+
+				for (auto offset : coronaGroup->offsets)
+				{
+					if (clone->flipX) {
+						offset.x = -offset.x;
+					}
+					if (clone->flipY) {
+						offset.y = -offset.y;
+					}
+
+					clonedCoronaGroup->offsets.push_back(offset);
+				}
+
+				//
+
+				toAdd.push_back(clonedCoronaGroup);
+			}
+		}
+		
+		for (auto coronaGroup : toAdd)
+		{
+			coronaGroups.push_back(coronaGroup);
+		}
+
+		float totalDistanceAllGroups = 0.0f;
+		for (auto coronaGroup : coronaGroups)
+		{
+			coronaGroup->UpdateTotalDistance();
+
+			totalDistanceAllGroups += coronaGroup->totalDistance;
+		}
+
+		
+		for (size_t i = 0; i < coronaGroups.size(); i++)
+		{
+			auto coronaGroup = coronaGroups[i];
+
+			//Log::file << "[" << i << "] Distance= " << coronaGroup->totalDistance << " of " << totalDistanceAllGroups << "(jump= " << coronaGroup->jumpDistance << ")" << std::endl;
+		}
+
+		int globalOffset = 0;
+
+		for (auto coronaGroup : coronaGroups)
+		{
+			//test
+			//add resetGlobalOffset in CoronaGroup
+			//only apply when not separating
+			//try split S to see what happens
+			
+			if(!currentCoronaGroup->keepGlobalOffset)
+				globalOffset = 0;
+
+			auto amountOfLights = GetAmountOfLightsInLine(coronaGroup->totalDistance, lightGroup->lightsDistance);
+			if (lightGroup->lightsDistance == 0) amountOfLights = coronaGroup->offsets.size();
+
+			for (int i = 0; i < amountOfLights; i++)
+			{
+				float linePosition = coronaGroup->totalDistance / (amountOfLights - 1) * i;
+
+				auto offsetPosition = PointInLines(coronaGroup->offsets, linePosition);
+				auto position = VehicleDummy::GetTransformedPosition(m_Vehicle, coronaGroup->startPosition + offsetPosition);
+
+				int offsetBy = lightGroup->offsetBy * (coronaGroup->invertOffset ? -1 : 1);
+
 				int t;
 				int stepIndex;
-				int offset = (i + (coronaGroup->offsetId * lightGroup->amount)) * lightGroup->offsetBy;
+				int offset = (i + globalOffset) * offsetBy;
 
-				//Log::file << "coronaGroup " << cn << ", i " << i << ", offsetId " << coronaGroup->offsetId << ", offset " << offset << std::endl;
+
+
+				//int offset = (i + (coronaGroup->offsetId * lightGroup->amount)) * lightGroup->offsetBy;
 
 				GetPatternStepAndTime(
 					lightGroup->pattern,
@@ -276,48 +312,29 @@ void Vehicle::RegisterCoronas() {
 				);
 			}
 
-			//draws offset points
-			/*
-			Log::file << "--coronaGroup--" << std::endl;
-			Log::file << "start= " << FormatCVector(coronaGroup->startPosition) << std::endl;
-			Log::file << "offsets= " << std::to_string(coronaGroup->offsets.size()) << std::endl;
-			for (int i = 0; i < (int)coronaGroup->offsets.size(); i++)
+
+			globalOffset += amountOfLights;
+
+			if(lightGroup->fixPatternOffset)
 			{
-				Log::file << "offset [" << i << "] " << FormatCVector(coronaGroup->offsets[i]) << std::endl;
+				if (coronaGroup->jumpDistance > 0) globalOffset += GetAmountOfLightsInLine(coronaGroup->jumpDistance, lightGroup->lightsDistance);
 			}
-			Log::file << "-- -- --" << std::endl;
-
-			float totalDistance = TotalDistanceBetweenPoints(coronaGroup->offsets);
-			for (int i = 0; i < (int)coronaGroup->offsets.size(); i++)
+			
+			/*
+			for (auto &offset : coronaGroup->offsets)
 			{
-				//CVector offset = coronaGroup.offsets[i];
-
-				float linePosition = totalDistance / (coronaGroup->offsets.size() - 1) * i; // add size -1 maybe
-
-				CVector offsetPosition = PointInLines(coronaGroup->offsets, linePosition);
-				Log::file << "drawing [" << i << "] offset " << FormatCVector(offsetPosition) << ", dist=" << totalDistance << ", pos = " << linePosition << std::endl;
-
-				CVector position = coronaGroup->startPosition - offsetPosition;
-
-				Log::file << "at " << FormatCVector(position) << std::endl;
-
-				CRGBA color = { 255, 0, 0, 255 };
-
-				if (i == 0)
-				{
-					color = { 0, 0, 255, 255 };
-				}
+				auto position = VehicleDummy::GetTransformedPosition(m_Vehicle, offset);
 
 				CCoronas::RegisterCorona(
 					lightId++,
 					NULL,
-					color.r,
-					color.g,
-					color.b,
-					color.a,
+					255,
+					0,
+					0,
+					255,
 					position,
-					lightGroup->size,
-					lightGroup->farClip,
+					0.2f,
+					800.0f,
 					eCoronaType::CORONATYPE_SHINYSTAR,
 					eCoronaFlareType::FLARETYPE_NONE,
 					false,
@@ -325,9 +342,9 @@ void Vehicle::RegisterCoronas() {
 					0,
 					0.0f,
 					false,
-					lightGroup->nearClip,
+					0.01f,
 					0,
-					200.0f,
+					100.0f,
 					false,
 					false
 				);
@@ -335,7 +352,13 @@ void Vehicle::RegisterCoronas() {
 			*/
 		}
 
-		for (auto c : coronaGroups) delete c;
+
+		//
+
+		for (auto coronaGroup : coronaGroups)
+		{
+			delete coronaGroup;
+		}
 		coronaGroups.clear();
 	}
 
@@ -350,6 +373,13 @@ void Vehicle::CheckForLightGroups() {
 
 		for (LightGroup* lightGroup : p.second) {
 			AddLightGroup(lightGroup);
+
+			for (auto dummy : lightGroup->dummies)
+			{
+				dummy->UpdateOffset(m_Vehicle);
+
+				//Log::file << "Dummy '" << dummy->name << "' offset=" << FormatCVector(dummy->GetOffset()) << ", pos=" << FormatCVector(dummy->GetPosition(m_Vehicle)) << std::endl;
+			}
 		}
 	}
 }

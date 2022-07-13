@@ -9,6 +9,7 @@ struct LightGroupCloneSettings
 	Dummy* toDummy;
 	bool flipX;
 	bool flipY;
+	bool invertOffset;
 };
 
 class LightGroup {
@@ -19,12 +20,13 @@ public:
 	std::vector<Dummy*> dummies;
 	std::vector<LightGroupCloneSettings*> clones;
 
-	int amount = 1;
+	float lightsDistance = 0.1f;
 	float size = 0.2f;
 	int offsetBy = 0;
 	bool lerpColor = true;
 	float farClip = 600.0f;
 	float nearClip = 0.05f;
+	bool fixPatternOffset = false;
 
 	Dummy* AddDummy(CVector offset) {
 		Dummy* dummy = new Dummy();
