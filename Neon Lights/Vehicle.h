@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "LightGroup.h"
+#include "CoronaGroup.h"
 
 struct LightGroupData {
 	LightGroup* lightGroup;
@@ -21,6 +22,9 @@ public:
 	void Update();
 	void Draw();
 	void DrawDebug();
+
+	std::vector<CoronaGroup*> GetCoronaGroups(LightGroupData* lightGroupData);
+
 	void RegisterCoronas();
 	void Destroy();
 

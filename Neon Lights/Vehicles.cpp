@@ -28,6 +28,7 @@ Vehicle* Vehicles::AddVehicle(CVehicle* veh) {
 }
 
 Vehicle* Vehicles::GetVehicle(CVehicle* veh) {
+	if (!HasVehicle(veh)) return NULL;
 	return m_VehicleMap[veh];
 }
 

@@ -42,7 +42,7 @@ static unsigned char ucharIntensity(unsigned char uc, float intensity) {
 	return (unsigned char)std::clamp((int)round(((float)uc) * intensity), 0, 255);
 }
 
-static void DrawWorldText(char* text, CVector position, CRGBA color = CRGBA(255, 255, 255, 255)) {
+static void DrawWorldText(std::string text, CVector position, CRGBA color = CRGBA(255, 255, 255, 255)) {
 	CFont::SetOrientation(ALIGN_CENTER);
 	CFont::SetColor(color);
 	CFont::SetDropShadowPosition(1);
@@ -56,7 +56,10 @@ static void DrawWorldText(char* text, CVector position, CRGBA color = CRGBA(255,
 	RwV3d screenCoors; float w, h;
 
 	CSprite::CalcScreenCoors(rwp, &screenCoors, &w, &h, true, true);
-	CFont::PrintString(screenCoors.x, screenCoors.y, text);
+
+	char buffer[1024];
+	sprintf(buffer, "%s", text.c_str());
+	CFont::PrintString(screenCoors.x, screenCoors.y, buffer);
 }
 
 static void DrawScreenText(char* text, CVector2D position, CRGBA color = CRGBA(0, 255, 0, 255)) {

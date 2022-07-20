@@ -7,7 +7,7 @@ bool firstLoad = true;
 
 bool Mod::m_EnableDebug = false;
 
-std::string Mod::m_Version = "1.3";
+std::string Mod::m_Version = "1.3.1";
 std::string Mod::m_Name = "Neon Lights";
 
 Mod::Mod() {

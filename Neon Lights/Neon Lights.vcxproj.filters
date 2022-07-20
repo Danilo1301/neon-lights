@@ -116,5 +116,6 @@
       <Filter>menu\item</Filter>
     </ClInclude>
     <ClInclude Include="Config.h" />
+    <ClInclude Include="CoronaGroup.h" />
   </ItemGroup>
 </Project>

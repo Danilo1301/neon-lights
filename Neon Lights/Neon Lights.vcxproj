@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
+    <ClInclude Include="CoronaGroup.h" />
     <ClInclude Include="Dummy.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="LightGroup.h" />
