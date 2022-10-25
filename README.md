@@ -3,9 +3,21 @@ https://github.com/Danilo1301/neon-lights/tree/v2
 
 <br>
 
-### Teclas:
-<p>CTRL + R: Reinicia a config</p>
-<p>CTRL + N: Liga/desliga as luzes</p>
+## Necessário
+1. CLEO
+2. Modloader
+3. Versão **GTA 1.0 US** (Você pode [baixar aqui](http://miscellaneous-c.blogspot.com/2016/04/crack-gta-sa-v10-us-hoodlum-no-cd-fixed.html))
+4. Open Limit Adjuster ou Fastman92 Limit Adjuster
+
+## Como instalar
+1. [Baixe aqui (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
+2. Arraste a pasta **modloader** para a pasta raíz do seu GTA
+3. 
+<br>
+
+### Como usar:
+<p>CTRL + R: Reload config</p>
+<p>CTRL + N: Turn ON/OFF lights</p>
 <p>CTRL + SHIFT + D: Debug</p>
 
 <br>
