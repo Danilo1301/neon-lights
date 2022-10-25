@@ -12,7 +12,7 @@ https://github.com/Danilo1301/neon-lights/tree/v2
 ## Como instalar
 1. [Baixe aqui (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
 2. Arraste a pasta **modloader** para a pasta raíz do seu GTA
-3. 
+
 <br>
 
 ### Como usar:
