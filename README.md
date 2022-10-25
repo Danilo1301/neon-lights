@@ -5,7 +5,7 @@
 4. Open Limit Adjuster or Fastman92 Limit Adjuster
 
 ## How to install
-1. [Download here (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
+1. [Download here (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/tag/v2.0.0)
 2. Drag and drop the **modloader** folder to your GTA folder
 
 ## How to use
@@ -29,7 +29,7 @@ Press CTRL + R to reload config
 4. Open Limit Adjuster ou Fastman92 Limit Adjuster
 
 ## Como instalar
-1. [Baixe aqui (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
+1. [Baixe aqui (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/tag/v2.0.0)
 2. Arraste a pasta **modloader** para a pasta raíz do seu GTA
 
 ## Como usar
