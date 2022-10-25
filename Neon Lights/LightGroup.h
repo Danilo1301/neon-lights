@@ -10,6 +10,7 @@ struct LightGroupCloneSettings
 	bool flipX;
 	bool flipY;
 	bool invertOffset;
+	CVector offset = CVector(0, 0, 0);
 };
 
 class LightGroup {

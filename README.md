@@ -132,6 +132,10 @@ Opções para o clone_to:
     
      "flipX": false,    //opcional
      "flipY": false,    //opcional
-     "invertOffset": false    //opcional
+     "invertOffset": false,    //opcional
+
+     "offsetX": 0.0, //opcional
+     "offsetY": 0.0, //opcional
+     "offsetZ": 0.0 //opcional
   }
 ```

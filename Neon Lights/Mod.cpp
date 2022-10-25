@@ -7,7 +7,7 @@ bool firstLoad = true;
 
 bool Mod::m_EnableDebug = false;
 
-std::string Mod::m_Version = "1.3.1";
+std::string Mod::m_Version = "1.3.2";
 std::string Mod::m_Name = "Neon Lights";
 
 Mod::Mod() {
@@ -196,7 +196,12 @@ void Mod::LoadConfig() {
 					Dummy::FromJSON(cloneValue["dummy"]),
 					ValidateValue(cloneValue["flipX"], false).asBool(),
 					ValidateValue(cloneValue["flipY"], false).asBool(),
-					ValidateValue(cloneValue["invertOffset"], false).asBool()
+					ValidateValue(cloneValue["invertOffset"], false).asBool(),
+					CVector(
+						ValidateValue(cloneValue["offsetX"], 0.0f).asFloat(),
+						ValidateValue(cloneValue["offsetY"], 0.0f).asFloat(),
+						ValidateValue(cloneValue["offsetZ"], 0.0f).asFloat()
+					)
 				});
 				
 

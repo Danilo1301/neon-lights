@@ -211,6 +211,9 @@ std::vector<CoronaGroup*> Vehicle::GetCoronaGroups(LightGroupData* lightGroupDat
 			{
 				if (clone->flipX) offset.x = -offset.x;
 				if (clone->flipY) offset.y = -offset.y;
+
+				offset += clone->offset;
+
 				clonedCoronaGroup->offsets.push_back(offset);
 			}
 
