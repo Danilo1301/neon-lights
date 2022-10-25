@@ -1,11 +1,11 @@
 ## Required
-1. ASI Loader
+1. CLEO
 2. Modloader
 3. Version **GTA 1.0 US** (You can [download here](http://miscellaneous-c.blogspot.com/2016/04/crack-gta-sa-v10-us-hoodlum-no-cd-fixed.html))
-4. Open Limit Adjuster
+4. Open Limit Adjuster or Fastman92 Limit Adjuster
 
 ## How to install
-1. [Download here](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
+1. [Download here (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
 2. Drag and drop the **modloader** folder to your GTA folder
 
 ## How to use
@@ -23,13 +23,13 @@ Press CTRL + R to reload config
 
 
 ## Necessário
-1. ASI Loader
+1. CLEO
 2. Modloader
 3. Versão **GTA 1.0 US** (Você pode [baixar aqui](http://miscellaneous-c.blogspot.com/2016/04/crack-gta-sa-v10-us-hoodlum-no-cd-fixed.html))
-4. Open Limit Adjuster
+4. Open Limit Adjuster ou Fastman92 Limit Adjuster
 
 ## Como instalar
-1. [Baixe aqui](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
+1. [Baixe aqui (v2.0.0)](https://github.com/Danilo1301/neon-lights/releases/download/v2.0.0/NeonLights.v2.0.0.zip)
 2. Arraste a pasta **modloader** para a pasta raíz do seu GTA
 
 ## Como usar
